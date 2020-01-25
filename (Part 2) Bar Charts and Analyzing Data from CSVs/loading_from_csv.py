@@ -1,16 +1,16 @@
-import csv
 from matplotlib import pyplot as plt
 from collections import Counter
-
-csv_file = open("./data.csv", "r")
-csv_reader = csv.DictReader(csv_file)
+import pandas as pd
 
 counter = Counter()
 
-for row in csv_reader:
-    counter.update(row["LanguagesWorkedWith"].split(";"))
 
-print(counter)
+data = pd.read_csv("./data.csv")
+ids = data["Responder_id"]
+languages = data["LanguagesWorkedWith"]
+
+for language in languages:
+    counter.update(language.split(";"))
 
 languages_x = []
 popularity_y = []
