@@ -14,7 +14,7 @@ plt.plot(ages_x, js_devs_y, label="JavaScript Developers", color="#F2D63B")
 
 plt.fill_between(ages_x, py_devs_y, all_devs_y,
                  where=(py_devs_y > all_devs_y),
-                 interpolate=True, alpha=0.25)
+                 interpolate=True, alpha=0.25, label="Above The Average")
 
 
 # # # Interpolate explanation from the documents
