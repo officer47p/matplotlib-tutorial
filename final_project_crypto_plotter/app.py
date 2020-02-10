@@ -28,45 +28,56 @@ coins_data_list = {"BTC": {"name": "Bitcoin", "prices": []},
 coins_list = list(coins_data_list.keys())
 # print(coins_list)
 time_series = []
+price_list = None
+
+
+def funcforthread():
+    global price_list
+    while True:
+        price_list = requests.get("{}{}={}&{}={}".format(
+            request_url, coins_parameter, ",".join(coins_list), currencies_parameter, ",".join(currencies))).json()
+        sleep(1)
+
+
+t_price_updater = threading.Thread(target=funcforthread)
+t_price_updater.start()
 
 
 def plotter(i):
-    global time_series
-    global coins_data_list
-    print(time_series)
-    print(coins_data_list["BTC"]["prices"])
-    temp_date = datetime.datetime.now().time().strftime("%H:%M:%S")
-    time_series.append(temp_date)
-    price_list = requests.get("{}{}={}&{}={}".format(
-        request_url, coins_parameter, ",".join(coins_list), currencies_parameter, ",".join(currencies))).json()
-    # print(temp_date)
-    counter = 0
-    # print(price_list.json())
+    if price_list != None:
+        global time_series
+        global coins_data_list
+        print(time_series)
+        print(coins_data_list["BTC"]["prices"])
+        temp_date = datetime.datetime.now().time().strftime("%H:%M:%S")
+        time_series.append(temp_date)
+        # print(temp_date)
+        counter = 0
+        # print(price_list.json())
 
-    for row in ax:
-        for col in row:
-            col.cla()
-            current_coin = coins_list[counter]
-            coins_data_list[current_coin]["prices"].append(
-                price_list[current_coin]["USD"])
+        for row in ax:
+            for col in row:
+                col.cla()
+                current_coin = coins_list[counter]
+                coins_data_list[current_coin]["prices"].append(
+                    price_list[current_coin]["USD"])
 
-            if len(coins_data_list[current_coin]["prices"]) > 20:
-                coins_data_list[current_coin]["prices"] = coins_data_list[current_coin]["prices"][-20:]
-                time_series = time_series[-20:]
+                if len(coins_data_list[current_coin]["prices"]) > 16:
+                    coins_data_list[current_coin]["prices"] = coins_data_list[current_coin]["prices"][-16:]
+                    time_series = time_series[-16:]
 
-            col.plot(
-                time_series, coins_data_list[current_coin]["prices"], label=current_coin)
-            col.set_xlabel("Time")
-            col.set_ylabel("Price(USD)")
-            col.set_title(coins_data_list[current_coin]["name"])
-            col.legend()
-            fig.autofmt_xdate()
-            counter += 1
+                col.plot(
+                    time_series, coins_data_list[current_coin]["prices"], label=current_coin)
+                col.set_xlabel("Time")
+                col.set_ylabel("Price(USD)")
+                col.set_title(coins_data_list[current_coin]["name"])
+                col.legend()
+                fig.autofmt_xdate()
+                counter += 1
 
 
 fig, ax = plt.subplots(nrows=3, ncols=3, sharex=False, sharey=False)
 
 animation = FuncAnimation(fig, plotter, interval=1000)
 plt.tight_layout()
-plt.grid(True)
 plt.show()
