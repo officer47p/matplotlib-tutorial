@@ -16,11 +16,12 @@ def draw(i):
     xs.append(next(c))
     ys.append(random.randint(0, 10))
     plt.cla()
-    if len(xs) > 20 and len(ys) > 20:
-        xs = xs[-20:]
-        ys = ys[-20:]
+    if len(xs) > 5 and len(ys) > 5:
+        xs = xs[-5:]
+        ys = ys[-5:]
     plt.plot(xs, ys)
+    # print(len(xs), len(ys))
 
 
-animation = FuncAnimation(plt.gcf(), draw, interval=100)
+animation = FuncAnimation(plt.gcf(), draw, interval=1000)
 plt.show()
